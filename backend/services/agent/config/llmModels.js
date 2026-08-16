@@ -4,7 +4,7 @@ import { ChatGroq } from "@langchain/groq"
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai"
 import { ChatOpenRouter } from "@langchain/openrouter";
 const groq=new ChatGroq({
-    model:"openai/gpt-oss-120b"
+    model:"llama-3.3-70b-versatile"
 })
 
 const gemini=new ChatGoogleGenerativeAI({
