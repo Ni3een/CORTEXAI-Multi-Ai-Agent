@@ -11,9 +11,20 @@ import morgan from "morgan"
 const port =process.env.PORT
 
 const app=express()
+const allowedOrigins = process.env.FRONTEND_URL
+    ? process.env.FRONTEND_URL.split(",").map(o => o.trim())
+    : []
+
 app.use(cors({
-    origin:process.env.FRONTEND_URL,
-    credentials:true
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, Postman)
+        if (!origin) return callback(null, true)
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true)
+        }
+        return callback(new Error(`CORS: origin ${origin} not allowed`))
+    },
+    credentials: true
 }))
 app.use(morgan("dev"))
 app.use(cookieParser())
