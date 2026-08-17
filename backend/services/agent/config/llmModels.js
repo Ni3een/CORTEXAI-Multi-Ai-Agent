@@ -29,6 +29,9 @@ export const getModel = async (agent) => {
     case "search":
       return groq;
 
+    case "pdf-rag":
+    return gemini;
+
     case "intent":
       return groq;
 
