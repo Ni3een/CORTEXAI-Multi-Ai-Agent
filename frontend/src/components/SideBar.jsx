@@ -130,15 +130,18 @@ function SideBar() {
                     </button>
                     <div className='flex items-center gap-2 flex-1'>
                         <img
-                            src='/cortexailogo.png'
+                            src='/image.png'
                             alt='CortexAI Logo'
-                            className='w-6 h-6 rounded-md object-contain'
+                            className='w-7 h-7 rounded-full object-contain ring-2 ring-indigo-500/40 bg-indigo-950/60'
                         />
-                        <span className='text-[16px] font-semibold text-slate-100 tracking-tight'>
+                        <span className='text-[15px] font-semibold text-slate-100 tracking-tight'>
                             CortexAI
                         </span>
+                        <span className='text-[10px] font-semibold text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 px-2 py-0.5 rounded-full tracking-wide'>
+                            {userData?.plan || "free"}
+                        </span>
                     </div>
-                    <span className='text-[10px] font-medium text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full tracking-wide'>{userData?.plan || "free"}</span>
+
                     <button className='flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer'
                         onClick={()=>dispatch(setSelectedConversation(null))}>
                         <PenSquare size={14} />
