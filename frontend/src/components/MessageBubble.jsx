@@ -19,8 +19,14 @@ function MessageBubble({ role, content, images }) {
   }
 
 
+  const handleAnalyze = () => {
+    // This will trigger analysis - you can customize this function
+    console.log("Analyzing message:", content)
+    // You could dispatch an action here to analyze the message
+  }
+
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"} items-start gap-3`}>
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"} items-start gap-3 group`}>
 
       {/* AI brain icon — only shown for assistant messages */}
       {!isUser && (
@@ -38,7 +44,8 @@ function MessageBubble({ role, content, images }) {
         </div>
       )}
 
-      <div className={`w-fit max-w-[92vw] md:max-w-[72%]
+      <div className="flex flex-col items-end gap-2">
+        <div className={`w-fit max-w-[92vw] md:max-w-[72%]
   px-4 py-2.5 rounded-2xl
   break-words overflow-hidden
   leading-relaxed
@@ -200,6 +207,21 @@ function MessageBubble({ role, content, images }) {
 
 
 
+      </div>
+
+      {/* Action button for user messages */}
+      {isUser && (
+        <button
+          onClick={handleAnalyze}
+          className="opacity-0 group-hover:opacity-100 transition-all duration-200 px-3 py-1.5 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-700 hover:from-indigo-600 hover:to-violet-800 text-white text-xs font-medium border-none cursor-pointer flex items-center gap-1.5 shadow-lg whitespace-nowrap"
+        >
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          analyze this and give answer
+        </button>
+      )}
       </div>
       {lightBox &&
         <div className='fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-6'>
