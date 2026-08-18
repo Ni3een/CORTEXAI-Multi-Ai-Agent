@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import MessageBubble from './MessageBubble'
 import LoadingAnimation from './LoadingAnimation'
-import RecentChats from './RecentChats'
 
 function MessageList() {
     const { selectedConversation } = useSelector(state => state.conversation)
@@ -60,7 +59,7 @@ function MessageList() {
         <div className='flex-1 overflow-y-auto px-6 py-6 space-y-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
 
             {messages.length == 0 || !selectedConversation ? (
-                <div className="h-full flex flex-col items-center justify-center gap-8 text-center px-4">
+                <div className="h-full flex flex-col items-center justify-center gap-6 text-center px-4">
 
                     {/* Logo with glow */}
                     <div className="relative flex items-center justify-center">
@@ -83,9 +82,6 @@ function MessageList() {
                             Ask a question, drop a file, or start building — Cortex keeps the context so you don't have to repeat yourself.
                         </p>
                     </div>
-
-                    {/* Recent Chats Section */}
-                    <RecentChats />
 
                     {/* Feature cards */}
                     <div className="flex flex-wrap justify-center gap-3 mt-1 w-full max-w-2xl">
