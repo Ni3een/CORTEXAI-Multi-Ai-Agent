@@ -21,6 +21,8 @@ function ChatInput() {
   const dispatch = useDispatch()
 
 
+  const transcriptRef = useRef("")
+
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SpeechRecognition) return;
@@ -31,17 +33,38 @@ function ChatInput() {
     recognition.continuous = true;
 
     recognition.onresult = (event) => {
-      let transcript = ""
+      let interim = ""
+      let final = ""
 
-      for (let index = event.resultIndex; index < event.results.length; index++) {
-
-        transcript += event.results[index][0].transcript
+      for (let index = 0; index < event.results.length; index++) {
+        if (event.results[index].isFinal) {
+          final += event.results[index][0].transcript
+        } else {
+          interim += event.results[index][0].transcript
+        }
       }
-      setValue(transcript)
+
+      // keep finalized text in ref, show interim alongside it
+      if (final) transcriptRef.current = final
+      setValue(transcriptRef.current + interim)
     }
 
     recognition.onend = () => {
-      setListening(false)
+      // browser auto-stops on silence with continuous=true
+      // only mark as stopped if user intentionally clicked stop
+      if (recognitionRef.current?._manualStop) {
+        setListening(false)
+        recognitionRef.current._manualStop = false
+      } else if (recognitionRef.current) {
+        // auto-restart to keep listening
+        try { recognition.start() } catch (_) {}
+      }
+    }
+
+    recognition.onerror = (e) => {
+      if (e.error !== 'no-speech') {
+        setListening(false)
+      }
     }
 
     recognitionRef.current = recognition
@@ -49,16 +72,18 @@ function ChatInput() {
 
   const toggleMic = () => {
     if (!recognitionRef.current) {
-      alert("speech recognition not supported")
+      alert("Speech recognition is not supported in this browser")
+      return   // ← was missing, caused crash
     }
     if (listening) {
+      recognitionRef.current._manualStop = true
       recognitionRef.current.stop()
       setListening(false)
     } else {
+      transcriptRef.current = ""   // reset accumulated text on new session
       recognitionRef.current.start()
       setListening(true)
     }
-
   }
 
 

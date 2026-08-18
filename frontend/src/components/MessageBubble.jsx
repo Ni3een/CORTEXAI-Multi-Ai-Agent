@@ -20,15 +20,33 @@ function MessageBubble({ role, content, images }) {
 
 
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"} items-start gap-3`}>
+
+      {/* AI brain icon — only shown for assistant messages */}
+      {!isUser && (
+        <div className="shrink-0 w-9 h-9 rounded-full border border-indigo-500/30 bg-indigo-500/10 flex items-center justify-center mt-0.5">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="url(#brainGrad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <defs>
+              <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#818cf8" />
+                <stop offset="100%" stopColor="#a78bfa" />
+              </linearGradient>
+            </defs>
+            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.46 2.5 2.5 0 0 1-1.07-4.69A3 3 0 0 1 5 10a2.99 2.99 0 0 1 2.53-2.95A2.5 2.5 0 0 1 9.5 2Z"/>
+            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.46 2.5 2.5 0 0 0 1.07-4.69A3 3 0 0 0 19 10a2.99 2.99 0 0 0-2.53-2.95A2.5 2.5 0 0 0 14.5 2Z"/>
+          </svg>
+        </div>
+      )}
+
       <div className={`w-fit max-w-[92vw] md:max-w-[72%]
   px-4 py-2.5 rounded-2xl
   break-words overflow-hidden
   leading-relaxed
         ${isUser
           ? "bg-gradient-to-br from-indigo-500 to-violet-700 text-white rounded-tr-sm"
-          : " text-slate-200 rounded-tl-sm"
+          : "text-slate-200 rounded-tl-sm"
         }`}>
+
 
 
         {images.length > 0 && (
