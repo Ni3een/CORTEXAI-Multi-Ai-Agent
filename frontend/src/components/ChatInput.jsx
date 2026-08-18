@@ -100,11 +100,27 @@ function ChatInput() {
     dispatch(addMessage({ role: "user", content: value.trim() }))
     setValue("")
     const data = await sendMessage(formData)
+
+    console.log("FRONTEND RESPONSE:", data)
+
     dispatch(setIsLoading(false))
     setSelectedFile(null)
+
+    if (!data) {
+      dispatch(addMessage({
+        role: "assistant",
+        content: "Something went wrong. No response received from server."
+      }))
+      return
+    }
+
     dispatch(setArtifacts(data.artifacts || []))
-    dispatch(addMessage({ role: "assistant", content: data?.answer, images: data?.images }))
-    console.log(data)
+
+    dispatch(addMessage({
+      role: "assistant",
+      content: data.answer || data.aiResponse || "No response received.",
+      images: data.images || []
+    }))
   }
 
   const agents = [
@@ -257,18 +273,18 @@ function ChatInput() {
             </button>
             <button
               onClick={toggleMic}
-              className={`flex items-center justify-center w-8 h-8 rounded-lg  transition-all duration-150 cursor-pointer ${listening ?"bg-red-500 text-white":"text-slate-600 hover:bg-white/[0.05]" }`}>
-             {listening?<Mic size={16} />:<MicOff size={16}/>} 
+              className={`flex items-center justify-center w-8 h-8 rounded-lg  transition-all duration-150 cursor-pointer ${listening ? "bg-red-500 text-white" : "text-slate-600 hover:bg-white/[0.05]"}`}>
+              {listening ? <Mic size={16} /> : <MicOff size={16} />}
             </button>
           </div>
           <button
             disabled={!value && isLoading}
             onClick={handleSendMessage}
             className={`flex items-center justify-center w-8 h-8 rounded-lg border-none cursor-pointer transition-all duration-150 ${value.trim() ? "bg-linear-to-br from-indigo-500 to-violet-700 hover:opacity-90 text-white" : "bg-white/[0.05] text-slate-600 cursor-not-allowed"}`}>
-          <Send size={15} />
-        </button>
+            <Send size={15} />
+          </button>
+        </div>
       </div>
-    </div>
     </div >
   )
 }

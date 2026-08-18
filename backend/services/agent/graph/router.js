@@ -4,6 +4,10 @@ import { agent } from "../controllers/agent.controller.js"
 export const router = async (state) => {
 
   if (state.agent && state.agent !== "auto") {
+    // If user selected "pdf" agent but also uploaded a PDF file → analyze it, don't generate
+    if (state.agent === "pdf" && state.file?.mimetype === "application/pdf") {
+      return { ...state, agent: "pdfRag" }
+    }
     return {
       ...state,
       agent: state.agent
