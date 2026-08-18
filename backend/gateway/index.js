@@ -11,20 +11,9 @@ import morgan from "morgan"
 const port =process.env.PORT
 
 const app=express()
-const allowedOrigins = process.env.FRONTEND_URL
-    ? process.env.FRONTEND_URL.split(",").map(o => o.trim())
-    : []
-
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, curl, Postman)
-        if (!origin) return callback(null, true)
-        if (allowedOrigins.includes(origin)) {
-            return callback(null, true)
-        }
-        return callback(new Error(`CORS: origin ${origin} not allowed`))
-    },
-    credentials: true
+    origin:process.env.FRONTEND_URL,
+    credentials:true
 }))
 app.use(morgan("dev"))
 app.use(cookieParser())
@@ -34,7 +23,7 @@ app.use("/api/agent",protect,proxyWithHeader(process.env.AGENT_SERVICE))
 app.use("/api/billing",protect,proxyWithHeader(process.env.BILLING_SERVICE))
 app.get("/api/me",protect,getCurrentUser)
 app.get("/",(req,res)=>{
-    res.json({message:"hello from gateway v6"})
+    res.json({message:"hello from gateway v5"})
 })
 
 app.listen(port,()=>{

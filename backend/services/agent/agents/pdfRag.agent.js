@@ -1,5 +1,5 @@
-import fs from "fs"
-import PDFParse from "pdf-parse"
+import fs, { stat } from "fs"
+import {PDFParse} from "pdf-parse"
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters"
 import { vectorStore } from "../config/vectorDb.js"
 import { getModel } from "../config/llmModels.js"
@@ -10,7 +10,11 @@ export const pdfRag=async (state)=>{
    try {
     await checkAgentLimit(state.userId,"pdf")
       const buffer=fs.readFileSync(state.file.path)
-      const result=await PDFParse(buffer)
+      const pdf=new PDFParse({
+        data:buffer
+      })
+
+      const result=await pdf.getText()
       const text=result.text
 
       const spilliter=new RecursiveCharacterTextSplitter({
@@ -62,10 +66,10 @@ new HumanMessage(`
 
 
    } catch (error) {
-    console.error("[pdfRag] Error:", error?.message || error)
+    console.log(error)
          return {
             ...state,
-            aiResponse:error?.message || "failed to analyze pdf"
+            aiResponse:error?.data?.message || "failed to analyze pdf"
         }
    }finally{
          fs.unlinkSync(state.file.path)

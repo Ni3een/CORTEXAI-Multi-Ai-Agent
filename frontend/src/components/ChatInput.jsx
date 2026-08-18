@@ -100,27 +100,11 @@ function ChatInput() {
     dispatch(addMessage({ role: "user", content: value.trim() }))
     setValue("")
     const data = await sendMessage(formData)
-
-    console.log("FRONTEND RESPONSE:", data)
-
     dispatch(setIsLoading(false))
     setSelectedFile(null)
-
-    if (!data) {
-      dispatch(addMessage({
-        role: "assistant",
-        content: "Something went wrong. No response received from server."
-      }))
-      return
-    }
-
     dispatch(setArtifacts(data.artifacts || []))
-
-    dispatch(addMessage({
-      role: "assistant",
-      content: data.answer || data.aiResponse || "No response received.",
-      images: data.images || []
-    }))
+    dispatch(addMessage({ role: "assistant", content: data?.answer, images: data?.images }))
+    console.log(data)
   }
 
   const agents = [
@@ -246,14 +230,6 @@ function ChatInput() {
         <textarea
           placeholder='Ask Anything...'
           onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault()
-              if (value.trim() && !isLoading) {
-                handleSendMessage()
-              }
-            }
-          }}
           value={value}
           className="w-full bg-transparent outline-none resize-none text-[14px] text-slate-200 placeholder:text-slate-600 leading-relaxed [scrollbar-width:none] [&::-webkit-scrollbar]:hidden disabled:opacity-50"
           rows={3}
@@ -273,18 +249,18 @@ function ChatInput() {
             </button>
             <button
               onClick={toggleMic}
-              className={`flex items-center justify-center w-8 h-8 rounded-lg  transition-all duration-150 cursor-pointer ${listening ? "bg-red-500 text-white" : "text-slate-600 hover:bg-white/[0.05]"}`}>
-              {listening ? <Mic size={16} /> : <MicOff size={16} />}
+              className={`flex items-center justify-center w-8 h-8 rounded-lg  transition-all duration-150 cursor-pointer ${listening ?"bg-red-500 text-white":"text-slate-600 hover:bg-white/[0.05]" }`}>
+             {listening?<Mic size={16} />:<MicOff size={16}/>} 
             </button>
           </div>
           <button
             disabled={!value && isLoading}
             onClick={handleSendMessage}
             className={`flex items-center justify-center w-8 h-8 rounded-lg border-none cursor-pointer transition-all duration-150 ${value.trim() ? "bg-linear-to-br from-indigo-500 to-violet-700 hover:opacity-90 text-white" : "bg-white/[0.05] text-slate-600 cursor-not-allowed"}`}>
-            <Send size={15} />
-          </button>
-        </div>
+          <Send size={15} />
+        </button>
       </div>
+    </div>
     </div >
   )
 }
