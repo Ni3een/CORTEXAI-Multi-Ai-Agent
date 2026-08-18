@@ -3,6 +3,8 @@
 <div align="center">
 
 ![CortexAI Banner](https://img.shields.io/badge/CortexAI-AI%20Powered-blueviolet?style=for-the-badge&logo=openai)
+[![Deployment](https://github.com/Ni3een/CORTEXAI-Multi-Ai-Agent/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ni3een/CORTEXAI-Multi-Ai-Agent/actions/workflows/deploy.yml)
+[![PR Check](https://github.com/Ni3een/CORTEXAI-Multi-Ai-Agent/actions/workflows/pr-check.yml/badge.svg)](https://github.com/Ni3een/CORTEXAI-Multi-Ai-Agent/actions/workflows/pr-check.yml)
 [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
 [![AWS](https://img.shields.io/badge/AWS-ECS%20Deployed-FF9900?style=for-the-badge&logo=amazon-aws)](https://aws.amazon.com/)
 [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)

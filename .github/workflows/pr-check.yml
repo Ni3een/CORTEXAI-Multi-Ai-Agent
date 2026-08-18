@@ -1,0 +1,86 @@
+name: PR Build Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐳 Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # =========================
+      # Build All Services
+      # =========================
+
+      - name: 🏗️ Build Gateway
+        run: |
+          echo "Building Gateway..."
+          docker build \
+            -f backend/gateway/Dockerfile \
+            -t gateway:pr-check \
+            backend
+          echo "✅ Gateway build successful!"
+
+      - name: 🏗️ Build Auth Service
+        run: |
+          echo "Building Auth..."
+          docker build \
+            -f backend/services/auth/Dockerfile \
+            -t auth-service:pr-check \
+            backend
+          echo "✅ Auth build successful!"
+
+      - name: 🏗️ Build Chat Service
+        run: |
+          echo "Building Chat..."
+          docker build \
+            -f backend/services/chat/Dockerfile \
+            -t chat-service:pr-check \
+            backend
+          echo "✅ Chat build successful!"
+
+      - name: 🏗️ Build Agent Service
+        run: |
+          echo "Building Agent..."
+          docker build \
+            -f backend/services/agent/Dockerfile \
+            -t agent-service:pr-check \
+            backend
+          echo "✅ Agent build successful!"
+
+      - name: 🏗️ Build Billing Service
+        run: |
+          echo "Building Billing..."
+          docker build \
+            -f backend/services/billing/Dockerfile \
+            -t billing-service:pr-check \
+            backend
+          echo "✅ Billing build successful!"
+
+      # =========================
+      # Build Summary
+      # =========================
+
+      - name: 🎉 Build Check Complete
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ All services built successfully!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "✓ Gateway"
+          echo "✓ Auth Service"
+          echo "✓ Chat Service"
+          echo "✓ Agent Service"
+          echo "✓ Billing Service"
+          echo ""
+          echo "🎯 Ready to merge!"

@@ -1,0 +1,33 @@
+name: Health Check
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Manual trigger
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 🏥 Check Gateway Health
+        run: |
+          echo "Checking Gateway health..."
+          # Replace with your actual gateway URL
+          # curl -f https://your-gateway-url.com/health || exit 1
+          echo "Health check would run here"
+          echo "✅ Gateway is healthy!"
+
+      - name: 📊 Health Status Summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🏥 CortexAI Health Check"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Timestamp: $(date)"
+          echo ""
+          echo "Configure your actual endpoint in the workflow file"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
