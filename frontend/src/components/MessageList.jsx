@@ -63,12 +63,12 @@ function MessageList() {
 
                     {/* Logo with glow */}
                     <div className="relative flex items-center justify-center">
-                        <div className="absolute w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl" />
-                        <div className="absolute w-44 h-44 rounded-full bg-violet-500/15 blur-2xl" />
+                        <div className="absolute w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl" />
+                        <div className="absolute w-64 h-64 rounded-full bg-violet-500/15 blur-2xl" />
                         <img
                             src="/cortexaiwobackground.png"
                             alt="CortexAI"
-                            className="relative w-44 h-44 object-contain drop-shadow-[0_0_36px_rgba(139,92,246,0.6)]"
+                            className="relative w-64 h-64 object-contain drop-shadow-[0_0_48px_rgba(139,92,246,0.7)]"
                         />
                     </div>
 
