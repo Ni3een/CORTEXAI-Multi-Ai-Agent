@@ -9,15 +9,23 @@ export const agent=async (req,res,next) => {
         const {prompt,conversationId,agent}=req.body
         const file=req.file
         console.log("file",file)
+        console.log("agent selected:", agent)
         const userId=req.headers["x-user-id"]
+        
+        // Add file info to user message if file exists
+        let userMessage = prompt
+        if (file) {
+            userMessage = `${prompt}\n\n📎 Uploaded: ${file.originalname}`
+        }
+        
         await axios.post(`${process.env.CHAT_SERVICE}/save-message`,{
-            conversationId,role:"user",content:prompt
+            conversationId,role:"user",content:userMessage
         })
         const result=await graph.invoke({
             prompt,conversationId,agent,userId,file
         })
         console.log("result",result)
-       await addMessage(conversationId,"user",prompt)
+       await addMessage(conversationId,"user",userMessage)
         await addMessage(conversationId,"assistant",result.aiResponse)
         await axios.post(`${process.env.CHAT_SERVICE}/save-message`,{
             conversationId,role:"assistant",content:result?.aiResponse,images:result?.images,artifacts:result?.artifacts

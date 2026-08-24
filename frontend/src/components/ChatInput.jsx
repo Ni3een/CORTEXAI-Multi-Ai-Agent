@@ -110,23 +110,35 @@ function ChatInput() {
       dispatch(setConvTitle({ conversationId: conversation?._id, title: value.slice(0, 40) }))
     }
 
-
     console.log(selectedFile)
+    
+    // Determine agent based on file type
+    let agentToUse = selectedAgent.toLowerCase()
+    
+    if (selectedFile) {
+      if (selectedFile.type === "application/pdf") {
+        agentToUse = "pdfRag"  // Force pdfRag for PDF files
+      } else if (selectedFile.type.startsWith("image/")) {
+        agentToUse = "imageAnalyzer"  // Force imageAnalyzer for images
+      }
+    }
+    
     const formData = new FormData()
     formData.append("prompt", value.trim())
     formData.append("conversationId", conversation?._id)
-    formData.append("agent", selectedAgent.toLowerCase())
+    formData.append("agent", agentToUse)  // Use determined agent
     if (selectedFile) {
       formData.append("file", selectedFile)
     }
 
 
 
-    dispatch(addMessage({ role: "user", content: value.trim() }))
+    dispatch(addMessage({ role: "user", content: value.trim(), images: selectedFile?.type.startsWith("image/") ? [URL.createObjectURL(selectedFile)] : [] }))
     setValue("")
     const data = await sendMessage(formData)
     dispatch(setIsLoading(false))
     setSelectedFile(null)
+    fileRef.current.value = ""  // Reset file input
     dispatch(setArtifacts(data.artifacts || []))
     dispatch(addMessage({ role: "assistant", content: data?.answer, images: data?.images }))
     console.log(data)
