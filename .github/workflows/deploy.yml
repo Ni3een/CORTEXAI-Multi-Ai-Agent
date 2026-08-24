@@ -35,16 +35,42 @@ jobs:
           aws sts get-caller-identity
           echo "AWS connection verified successfully!"
 
-      # Login to ECR
+      # Login to ECR using AWS CLI
       - name: 🔑 Login to Amazon ECR
         id: login-ecr
         run: |
           echo "Logging in to Amazon ECR..."
-          aws ecr get-login-password --region "$AWS_REGION" | \
-            docker login \
-              --username AWS \
-              --password-stdin "$ECR_REGISTRY"
+          echo "Region: $AWS_REGION"
+          echo "Account ID: $AWS_ACCOUNT_ID"
+          echo "Registry: $ECR_REGISTRY"
+          
+          # Use aws ecr get-login-password and pipe to docker login
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+          
           echo "ECR login successful!"
+
+      # Check/Create ECR Repositories
+      - name: 📦 Verify ECR Repositories
+        run: |
+          echo "Checking ECR repositories..."
+          
+          REPOS=("gateway" "auth-service" "chat-service" "agent-service" "billing-service")
+          
+          for repo in "${REPOS[@]}"; do
+            echo "Checking repository: $repo"
+            if ! aws ecr describe-repositories --repository-names "$repo" --region "$AWS_REGION" 2>/dev/null; then
+              echo "Creating repository: $repo"
+              aws ecr create-repository \
+                --repository-name "$repo" \
+                --region "$AWS_REGION" \
+                --image-scanning-configuration scanOnPush=true \
+                --encryption-configuration encryptionType=AES256 || echo "Repository might already exist"
+            else
+              echo "✅ Repository $repo exists"
+            fi
+          done
+          
+          echo "All repositories verified!"
 
       # =========================
       # Gateway Service
