@@ -202,12 +202,7 @@ function MessageBubble({ role, content, images }) {
 
             {/* Generated Images with Actions */}
             {images.length > 0 && (
-              <div className='flex flex-col gap-3 mt-2'>
-                {/* Simple text before image */}
-                <p className="text-[14px] text-slate-200">
-                  Here is your image of a dog 🐕
-                </p>
-
+              <div className='flex flex-col gap-3'>
                 {images.map((img, i) => (
                   <div key={i} className="flex flex-col gap-3">
                     
@@ -217,7 +212,7 @@ function MessageBubble({ role, content, images }) {
                         src={img}
                         loading="lazy"
                         onError={(e) => e.currentTarget.remove()}
-                        className="w-full max-w-md h-auto rounded-2xl object-cover border border-white/10 shadow-lg"
+                        className="w-full max-w-md h-auto rounded-2xl object-cover"
                         alt="Generated"
                       />
                       
@@ -231,50 +226,32 @@ function MessageBubble({ role, content, images }) {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-2">
-                      {/* Download Button */}
+                    <div className="flex items-center gap-2.5">
+                      {/* Download Image Button */}
                       <button
                         onClick={() => downloadImage(img)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-500 hover:to-violet-600 text-white text-[13px] font-medium transition-all duration-200 border-none cursor-pointer shadow-lg"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-700 hover:from-indigo-500 hover:to-violet-600 text-white text-[13px] font-medium transition-all duration-200 border-none cursor-pointer"
                       >
                         <Download size={16} />
                         Download Image
+                        <ExternalLink size={14} className="ml-0.5" />
                       </button>
 
                       {/* Copy Link Button */}
                       <button
                         onClick={() => copyImageLink(img)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1e1f26] hover:bg-[#2a2b35] text-slate-300 text-[13px] font-medium transition-all duration-200 border-none cursor-pointer"
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-transparent hover:bg-white/[0.05] text-slate-300 hover:text-white text-[13px] font-medium transition-all duration-200 border border-white/[0.15] hover:border-white/[0.25] cursor-pointer"
                       >
-                        {copiedLink ? (
-                          <>
-                            <Check size={16} />
-                            Copied
-                          </>
-                        ) : (
-                          <>
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                            </svg>
-                            Copy Link
-                          </>
-                        )}
-                      </button>
-
-                      {/* Like Button */}
-                      <button className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#1e1f26] hover:bg-[#2a2b35] text-slate-400 hover:text-green-400 transition-all duration-200 border-none cursor-pointer">
-                        <ThumbsUp size={16} />
-                      </button>
-
-                      {/* Dislike Button */}
-                      <button className="flex items-center justify-center w-9 h-9 rounded-lg bg-[#1e1f26] hover:bg-[#2a2b35] text-slate-400 hover:text-red-400 transition-all duration-200 border-none cursor-pointer">
-                        <ThumbsDown size={16} />
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                        {copiedLink ? "Copied!" : "Copy Link"}
                       </button>
                     </div>
 
                     {/* Expiry Warning */}
-                    <div className="flex items-center gap-2 text-slate-500 text-[12px]">
+                    <div className="flex items-center gap-2 text-slate-400 text-[12px]">
                       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
