@@ -57,11 +57,37 @@ export const login = async (req, res) => {
 export const logOut = async (req, res) => {
     try {
         const sessionId = req.cookies?.session
-        await redis.del(`session-${sessionId}`)
+        
+        if (sessionId) {
+            // Delete session from Redis
+            await redis.del(`session-${sessionId}`)
+            
+            // Also delete user-session mapping if exists
+            const sessionData = await redis.get(`session-${sessionId}`)
+            if (sessionData) {
+                const userData = JSON.parse(sessionData)
+                await redis.del(`user-session-${userData.userId}`)
+            }
+        }
 
-        res.clearCookie("session")
+        // Clear cookie with proper options (same as set)
+        res.clearCookie("session", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            path: "/"
+        })
+        
         return res.status(200).json({ message: "logout successfully" })
     } catch (error) {
+        console.error("Logout error:", error)
+        // Even if error occurs, clear the cookie
+        res.clearCookie("session", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            path: "/"
+        })
         return res.status(500).json({ message: `logout error ${error}` })
     }
 }
