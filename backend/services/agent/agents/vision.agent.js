@@ -73,18 +73,7 @@ ${state.prompt}
         return {
             ...state,
             images: [downloadUrl],
-            aiResponse:`
-🎨 **Image Generated Successfully!**
-
-![Generated Image](${downloadUrl})
-
-📥 [Download High-Quality Image](${downloadUrl})
-
-🤖 **Generated with:** Flux Model (via Pollinations.ai)
-📝 **Enhanced Prompt:** ${enhancedPrompt}
-
-⏳ *Download link expires in 24 hours.*
-`
+            aiResponse: `Here is your generated image 🎨`
         }
     } catch (error) {
         console.error("❌ Vision Agent Error:", error)

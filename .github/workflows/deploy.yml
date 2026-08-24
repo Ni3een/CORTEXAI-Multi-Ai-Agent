@@ -35,19 +35,17 @@ jobs:
           aws sts get-caller-identity
           echo "AWS connection verified successfully!"
 
-      # Login to ECR using AWS CLI
+      # Login to ECR using official action
       - name: 🔑 Login to Amazon ECR
         id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'true'
+
+      - name: ✅ Verify ECR Login
         run: |
-          echo "Logging in to Amazon ECR..."
-          echo "Region: $AWS_REGION"
-          echo "Account ID: $AWS_ACCOUNT_ID"
-          echo "Registry: $ECR_REGISTRY"
-          
-          # Use aws ecr get-login-password and pipe to docker login
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-          
-          echo "ECR login successful!"
+          echo "ECR Registry: ${{ steps.login-ecr.outputs.registry }}"
+          echo "Login successful!"
 
       # Check/Create ECR Repositories
       - name: 📦 Verify ECR Repositories
