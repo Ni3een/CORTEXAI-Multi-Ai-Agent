@@ -107,7 +107,7 @@ function SideBar() {
 
         <div className={` fixed lg:static inset-y-0 left-0 z-50
         w-[270px] h-screen shrink-0
-        bg-[#0d0f14] border-r border-white/[0.06]
+        dark:bg-[#0d0f14] light:bg-white border-r dark:border-white/[0.06] light:border-gray-200
         transition-transform duration-250
         ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
 `}
@@ -116,7 +116,7 @@ function SideBar() {
             
 
             <div className='flex flex-col h-full'>
-                <div className='flex items-center gap-2.5 px-4 py-4 border-b border-white/[0.06]'>
+                <div className='flex items-center gap-2.5 px-4 py-4 border-b dark:border-white/[0.06] light:border-gray-200'>
                     <div className='hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer'
                         onClick={() => setCollapsed(true)}
                     >
@@ -130,12 +130,12 @@ function SideBar() {
                     </button>
                     <div className='flex items-center gap-2 flex-1'>
                         <img
-                            src='/image.png'
+                            src='/ailogo.png'
                             alt='CortexAI Logo'
-                            className='w-7 h-7 rounded-full object-contain ring-2 ring-indigo-500/40 bg-indigo-950/60'
+                            className='w-7 h-7 object-contain'
                         />
-                        <span className='text-[15px] font-semibold text-slate-100 tracking-tight'>
-                            CortexAI
+                        <span className='text-[15px] font-semibold dark:text-slate-100 light:text-gray-900 tracking-tight'>
+                            Cortex<span className='text-indigo-500'>AI</span>
                         </span>
                         <span className='text-[10px] font-semibold text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 px-2 py-0.5 rounded-full tracking-wide'>
                             {userData?.plan || "free"}

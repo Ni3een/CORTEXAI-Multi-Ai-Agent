@@ -6,7 +6,19 @@ import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-function MessageBubble({ role, content, images }) {
+// Utility function to format timestamp
+const formatTime = (timestamp) => {
+  if (!timestamp) return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  
+  const date = new Date(timestamp)
+  return date.toLocaleTimeString('en-US', { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  })
+}
+
+function MessageBubble({ role, content, images, createdAt }) {
   const isUser = role === "user"
   const [lightBox, setLightBox] = useState(null)
   const [copiedCode, setCopiedCode] = useState("")
@@ -76,7 +88,7 @@ function MessageBubble({ role, content, images }) {
             <div className="bg-gradient-to-br from-indigo-600 to-violet-700 text-white px-4 py-2.5 rounded-2xl rounded-tr-md text-[14px] leading-relaxed break-words">
               {content}
             </div>
-            <span className="text-[11px] text-slate-500 shrink-0">12:45 PM</span>
+            <span className="text-[11px] text-slate-500 shrink-0">{formatTime(createdAt)}</span>
           </div>
         )}
 
@@ -87,7 +99,7 @@ function MessageBubble({ role, content, images }) {
             {/* AI Name and Timestamp */}
             <div className="flex items-center gap-2">
               <span className="text-[13px] font-semibold text-slate-200">CortexAI</span>
-              <span className="text-[11px] text-slate-500">12:45 PM</span>
+              <span className="text-[11px] text-slate-500">{formatTime(createdAt)}</span>
             </div>
 
             {/* AI Text Response */}

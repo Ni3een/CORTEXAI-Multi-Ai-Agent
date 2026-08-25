@@ -1,4 +1,4 @@
-import { Code2, FileText, Globe, ImageIcon, MessageSquare, Mic, MicOff, Paperclip, Presentation, Send, X, Zap } from 'lucide-react'
+import { FileText, Mic, MicOff, Paperclip, Send, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import sendMessage from '../features/sendMessage'
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,7 +11,7 @@ import { useRef } from 'react'
 
 function ChatInput() {
   const [value, setValue] = useState("")
-  const [selectedAgent, setSelectedAgent] = useState("Auto")
+  const { selectedAgent } = useSelector(state => state.agent)
   const { selectedConversation } = useSelector(state => state.conversation)
   const { messages, isLoading } = useSelector(state => state.message)
   const [selectedFile, setSelectedFile] = useState(null)
@@ -19,6 +19,16 @@ function ChatInput() {
   const recognitionRef = useRef(null)
   const fileRef = useRef(null)
   const dispatch = useDispatch()
+
+
+  // Listen for suggestion card clicks
+  useEffect(() => {
+    const handleFillInput = (e) => {
+      setValue(e.detail.prompt)
+    }
+    window.addEventListener('fillChatInput', handleFillInput)
+    return () => window.removeEventListener('fillChatInput', handleFillInput)
+  }, [])
 
 
   const transcriptRef = useRef("")
@@ -133,14 +143,14 @@ function ChatInput() {
 
 
 
-    dispatch(addMessage({ role: "user", content: value.trim(), images: selectedFile?.type.startsWith("image/") ? [URL.createObjectURL(selectedFile)] : [] }))
+    dispatch(addMessage({ role: "user", content: value.trim(), images: selectedFile?.type.startsWith("image/") ? [URL.createObjectURL(selectedFile)] : [], createdAt: new Date().toISOString() }))
     setValue("")
     const data = await sendMessage(formData)
     dispatch(setIsLoading(false))
     setSelectedFile(null)
     fileRef.current.value = ""  // Reset file input
     dispatch(setArtifacts(data.artifacts || []))
-    dispatch(addMessage({ role: "assistant", content: data?.answer, images: data?.images }))
+    dispatch(addMessage({ role: "assistant", content: data?.answer, images: data?.images, createdAt: new Date().toISOString() }))
     console.log(data)
   }
 
@@ -187,58 +197,14 @@ function ChatInput() {
       label: "Search"
     }
 
-  ]
-
   return (
-    <div className='w-full overflow-hidden px-3 md:px-5 py-4 border-t border-white/[0.06] bg-[#0d0f14]'>
-      <div className='flex flex-col gap-2 bg-white/[0.03] border border-white/[0.07] rounded-2xl px-4 pt-3.5 pb-3'>
-
-        <div className='flex w-[80%] gap-2 pr-2 flex-wrap'>
-          {agents.map((agent) => {
-            const isActive = selectedAgent === agent.label
-            const Icon = agent.icon
-            return (
-              <div
-                onClick={() => setSelectedAgent(agent.label)}
-                className={`
-            flex-shrink-0
-            cursor-pointer
-            inline-flex
-            items-center
-            gap-1.5
-            px-3
-            py-2
-            rounded-full
-            text-xs
-            font-medium
-            border
-            transition-all
-
-            ${isActive
-                    ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white border-transparent shadow-[0_1px_8px_rgba(99,102,241,.35)]"
-                    : "bg-white/[0.03] text-slate-400 border-white/[0.06] hover:bg-white/[0.07]"
-                  }
-          `}>
-
-                <Icon size={14}
-                  className={
-                    isActive
-                      ? "text-white"
-                      : "text-slate-500"
-                  } />
-
-                {agent.label}
-
-              </div>
-            )
-
-          })}
-        </div>
+    <div className='w-full overflow-hidden px-3 md:px-5 py-4 border-t border-white/[0.06] dark:border-white/[0.06] light:border-gray-200 dark:bg-[#0d0f14] light:bg-white'>
+      <div className='flex flex-col gap-2 bg-white/[0.03] dark:bg-white/[0.03] light:bg-gray-50 border border-white/[0.07] dark:border-white/[0.07] light:border-gray-200 rounded-2xl px-4 pt-3.5 pb-3'>
 
         {
           selectedFile && <div className='my-3'>
 
-            <div className='inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2'>
+            <div className='inline-flex items-center gap-2 rounded-xl border border-white/10 dark:border-white/10 light:border-gray-200 bg-white/[0.04] dark:bg-white/[0.04] light:bg-gray-100 px-3 py-2'>
               {
                 selectedFile?.type === "application/pdf" ? <FileText size={16}
 
@@ -248,15 +214,15 @@ function ChatInput() {
               }
 
               <div>
-                <p className='text-xs text-white'>
+                <p className='text-xs dark:text-white light:text-gray-900'>
                   {selectedFile?.name}
                 </p>
-                <p className='text-[10px] text-slate-500'>
+                <p className='text-[10px] dark:text-slate-500 light:text-gray-500'>
                   {Math.ceil(selectedFile.size)}KB
                 </p>
 
               </div>
-              <button className='ml-2' onClick={() => { setSelectedFile(null); fileRef.current.value = "" }}><X size={14} className='text-slate-500 hover:text-white' /></button>
+              <button className='ml-2' onClick={() => { setSelectedFile(null); fileRef.current.value = "" }}><X size={14} className='dark:text-slate-500 light:text-gray-500 hover:text-white dark:hover:text-white light:hover:text-gray-900' /></button>
             </div>
 
 
@@ -265,7 +231,7 @@ function ChatInput() {
 
 
         <textarea
-          placeholder='Ask Anything...'
+          placeholder='Ask anything...'
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -276,8 +242,8 @@ function ChatInput() {
             }
           }}
           value={value}
-          className="w-full bg-transparent outline-none resize-none text-[14px] text-slate-200 placeholder:text-slate-600 leading-relaxed [scrollbar-width:none] [&::-webkit-scrollbar]:hidden disabled:opacity-50"
-          rows={3}
+          className="w-full bg-transparent outline-none resize-none text-[14px] dark:text-slate-200 light:text-gray-900 dark:placeholder:text-slate-600 light:placeholder:text-gray-400 leading-relaxed [scrollbar-width:none] [&::-webkit-scrollbar]:hidden disabled:opacity-50"
+          rows={1}
         />
         <div className='flex items-center justify-between'>
           <div className='flex items-center gap-1'>
@@ -289,23 +255,24 @@ function ChatInput() {
               }
             }} />
 
-            <button className='flex items-center justify-center w-8 h-8 rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/[0.05] border border-transparent hover:border-white/[0.06] transition-all duration-150 bg-transparent cursor-pointer' onClick={() => fileRef.current.click()}>
+            <button className='flex items-center justify-center w-8 h-8 rounded-lg dark:text-slate-600 light:text-gray-500 hover:text-slate-400 dark:hover:text-slate-400 light:hover:text-gray-700 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100 border border-transparent hover:border-white/[0.06] dark:hover:border-white/[0.06] light:hover:border-gray-200 transition-all duration-150 bg-transparent cursor-pointer' onClick={() => fileRef.current.click()}>
               <Paperclip size={16} />
             </button>
             <button
               onClick={toggleMic}
-              className={`flex items-center justify-center w-8 h-8 rounded-lg  transition-all duration-150 cursor-pointer ${listening ?"bg-red-500 text-white":"text-slate-600 hover:bg-white/[0.05]" }`}>
-             {listening?<Mic size={16} />:<MicOff size={16}/>} 
+              className={`flex items-center justify-center w-8 h-8 rounded-lg  transition-all duration-150 cursor-pointer ${listening ? "bg-red-500 text-white" : "dark:text-slate-600 light:text-gray-500 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100"}`}>
+              {listening ? <Mic size={16} /> : <MicOff size={16} />}
             </button>
+            <span className='text-[11px] dark:text-slate-600 light:text-gray-400 ml-1'>↵ Enter to send</span>
           </div>
           <button
             disabled={!value && isLoading}
             onClick={handleSendMessage}
-            className={`flex items-center justify-center w-8 h-8 rounded-lg border-none cursor-pointer transition-all duration-150 ${value.trim() ? "bg-linear-to-br from-indigo-500 to-violet-700 hover:opacity-90 text-white" : "bg-white/[0.05] text-slate-600 cursor-not-allowed"}`}>
-          <Send size={15} />
-        </button>
+            className={`flex items-center justify-center px-4 py-2 rounded-lg border-none cursor-pointer transition-all duration-150 ${value.trim() ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_0_12px_rgba(99,102,241,0.3)]" : "bg-white/[0.05] dark:bg-white/[0.05] light:bg-gray-200 dark:text-slate-600 light:text-gray-400 cursor-not-allowed"}`}>
+            <Send size={15} />
+          </button>
+        </div>
       </div>
-    </div>
     </div >
   )
 }

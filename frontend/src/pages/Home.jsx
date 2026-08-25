@@ -32,7 +32,7 @@ function Home() {
     }
 
     return (
-        <div className='h-screen flex bg-[#0d0f14] text-white overflow-hidden'>
+        <div className='h-screen flex dark:bg-[#0d0f14] light:bg-gray-50 dark:text-white light:text-gray-900 overflow-hidden'>
 
 <SideBar/>
 <ChatArea/>
