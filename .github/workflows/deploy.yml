@@ -136,17 +136,17 @@ jobs:
       - name: 🏷️ Tag Chat Image
         run: |
           docker tag chat-service:latest \
-            "$ECR_REGISTRY/chat-service:latest"
+            "$ECR_REGISTRY/chat-serivce:latest"
 
           docker tag chat-service:latest \
-            "$ECR_REGISTRY/chat-service:${{ github.sha }}"
+            "$ECR_REGISTRY/chat-serivce:${{ github.sha }}"
 
       - name: 📤 Push Chat to ECR
         run: |
           echo "Pushing Chat to ECR..."
 
-          docker push "$ECR_REGISTRY/chat-service:latest"
-          docker push "$ECR_REGISTRY/chat-service:${{ github.sha }}"
+          docker push "$ECR_REGISTRY/chat-serivce:latest"
+          docker push "$ECR_REGISTRY/chat-serivce:${{ github.sha }}"
 
           echo "Chat pushed successfully!"
 
@@ -305,7 +305,7 @@ jobs:
           echo "📦 Images pushed to ECR:"
           echo "  • Gateway: $ECR_REGISTRY/gateway:latest"
           echo "  • Auth:    $ECR_REGISTRY/auth-service:latest"
-          echo "  • Chat:    $ECR_REGISTRY/chat-service:latest"
+          echo "  • Chat:    $ECR_REGISTRY/chat-serivce:latest"
           echo "  • Agent:   $ECR_REGISTRY/agent-service:latest"
           echo "  • Billing: $ECR_REGISTRY/billing-service:latest"
 
