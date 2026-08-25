@@ -3,5 +3,10 @@
   "outputDirectory": "frontend/dist",
   "installCommand": "npm install --prefix frontend",
   "framework": null,
-  "devCommand": "cd frontend && npm run dev"
+  "devCommand": "cd frontend && npm run dev",
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  }
 }
