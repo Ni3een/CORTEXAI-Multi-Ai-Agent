@@ -1,11 +1,11 @@
 import React from 'react'
-import { Coins, LogOut, Menu, MessageSquare, PanelLeftIcon, PanelRight, PenBoxIcon, PenSquare, Plus, User, X } from "lucide-react"
+import { Coins, LogOut, Menu, MessageSquare, PanelLeftIcon, PanelRight, PenBoxIcon, PenSquare, Plus, User, X, Code2, FileText, Presentation, ImageIcon, Globe, Command } from "lucide-react"
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { getConversations } from '../features/getConversations'
 import { useDispatch, useSelector } from 'react-redux'
 import { addConversation, setConversations, setSelectedConversation } from '../redux/conversationSlice'
-
+import { setSelectedAgent } from '../redux/agentSlice'
 import { createConversation } from '../features/createConversation'
 import logOut from '../features/logOut'
 import { setUserdata } from '../redux/userSlice'
@@ -16,8 +16,18 @@ function SideBar() {
     const [imageError, setImageError] = useState(false)
     const { conversations, selectedConversation } = useSelector(state => state.conversation)
     const { userData } = useSelector(state => state.user)
-    const [showBilling,setShowBilling]=useState(false)
-    const [mobileOpen,setMobileOpen]=useState(false)
+    const { selectedAgent } = useSelector(state => state.agent)
+    const [showBilling, setShowBilling] = useState(false)
+    const [mobileOpen, setMobileOpen] = useState(false)
+
+    const agentMenuItems = [
+        { id: 'Chat', icon: MessageSquare, label: 'Chat' },
+        { id: 'Coding', icon: Code2, label: 'Coding' },
+        { id: 'PDF', icon: FileText, label: 'PDF' },
+        { id: 'PPT', icon: Presentation, label: 'PPT' },
+        { id: 'Vision', icon: ImageIcon, label: 'Vision' },
+        { id: 'Search', icon: Globe, label: 'Search' },
+    ]
     useEffect(() => {
         const getConv = async () => {
             const data = await getConversations()
@@ -30,69 +40,6 @@ function SideBar() {
         const data = await createConversation()
         dispatch(addConversation(data))
     }
-
-
-
-    if (collapsed) {
-        return (
-            <div className='hidden lg:flex flex-col items-center w-[56px] h-screen bg-[#0d0f14] border-r border-white/[0.06] py-4 gap-1 shrink-0'>
-                <button className='flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer mb-1'
-                    onClick={() => setCollapsed(false)}
-                >
-                    <PanelRight />
-                </button>
-
-                <button
-                    className='flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer '
-                    onClick={()=>dispatch(setSelectedConversation(null))}
-                >
-                    <Plus size={17} />
-                </button>
-
-                <div className='flex-1 overflow-y-auto px-2.5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-5'>
-                    {conversations.map((conv, i) => {
-                        const isActive = selectedConversation?._id == conv?._id
-                        return (
-                            <div
-                                onClick={() => dispatch(setSelectedConversation(conv))}
-                                className={`flex items-center gap-2.5 cursor-pointer mb-0.5 px-3 py-2.5 rounded-[10px] border transition-colors duration-150
-                ${isActive ? "bg-indigo-500/10 border-indigo-500/[0.18]"
-                                        : "bg-transparent border-transparent"}`}>
-                                <div className={`flex items-center justify-center shrink-0 w-[20px] h-[20px] rounded-lg transition-colors duration-150
-                ${isActive ? "bg-indigo-500/15 text-indigo-400" : "bg-white/[0.05] text-slate-500"}`}>
-                                    <MessageSquare size={13} />
-                                </div>
-                               
-
-                            </div>
-                        )
-                    })}
-
-                </div>
-
-<div className='"relative shrink-0'>
-                                {
-                                    (userData?.avatar && !imageError)
-                                        ?
-                                        <img
-                                            className='w-9 h-9 rounded-[10px] object-cover border-2 border-indigo-500/25'
-                                            src={userData?.avatar}
-                                            alt={"image"}
-                                            onError={() => setImageError(true)} />
-                                        :
-                                        <div className='w-9 h-9 rounded-[10px] bg-white/[0.06] flex items-center justify-center'>
-                                            <User size={15} className="text-slate-400" />
-                                        </div>
-
-                                }
-
-                            </div>
-                
-
-            </div>
-        )
-    }
-
 
     return (
         <>
@@ -116,116 +63,148 @@ function SideBar() {
             
 
             <div className='flex flex-col h-full'>
-                <div className='flex items-center gap-2.5 px-4 py-4 border-b dark:border-white/[0.06] light:border-gray-200'>
-                    <div className='hidden lg:flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer'
-                        onClick={() => setCollapsed(true)}
-                    >
-                        <PanelLeftIcon />
-                    </div>
-
-                    <button  onClick={() => setMobileOpen(false)}
-          className="lg:hidden flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer"
->
-                        <X/>
-                    </button>
-                    <div className='flex items-center gap-2 flex-1'>
-                        <img
-                            src='/ailogo.png'
-                            alt='CortexAI Logo'
-                            className='w-7 h-7 object-contain'
-                        />
-                        <span className='text-[15px] font-semibold dark:text-slate-100 light:text-gray-900 tracking-tight'>
+                {/* Logo Section */}
+                <div className='flex items-center gap-3 px-5 py-5'>
+                    <img
+                        src='/ailogo.png'
+                        alt='CortexAI'
+                        className='w-9 h-9 object-contain'
+                    />
+                    <div className='flex flex-col'>
+                        <span className='text-[17px] font-bold dark:text-white light:text-gray-900 tracking-tight'>
                             Cortex<span className='text-indigo-500'>AI</span>
                         </span>
-                        <span className='text-[10px] font-semibold text-indigo-300 bg-indigo-500/20 border border-indigo-500/30 px-2 py-0.5 rounded-full tracking-wide'>
-                            {userData?.plan || "free"}
+                        <span className='text-[11px] dark:text-slate-500 light:text-gray-500'>
+                            Your AI Copilot
                         </span>
                     </div>
-
-                    <button className='flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer'
-                        onClick={()=>dispatch(setSelectedConversation(null))}>
-                        <PenSquare size={14} />
-                    </button>
-                </div>
-
-                <div className='px-4 pt-4 pb-1'>
-                    <button className='w-full flex items-center justify-center gap-2 text-sm font-medium text-white bg-linear-to-br from-indigo-500 to-violet-700 rounded-xl py-[10px] border-none cursor-pointer hover:opacity-90 transition-opacity duration-150'
-                        onClick={()=>dispatch(setSelectedConversation(null))}
+                    <button  
+                        onClick={() => setMobileOpen(false)}
+                        className="lg:hidden ml-auto flex items-center justify-center w-7 h-7 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer"
                     >
-                        <Plus size={15} />
-                        New Chat
+                        <X size={16} />
                     </button>
                 </div>
 
-                {conversations.length == 0
-                    ?
-                    <div className='px-5 pt-4 pb-1.5 text-[10.5px] font-semibold uppercase tracking-widest text-slate-600'>
-                        No Recent Conversations
-                    </div>
-                    :
-                    (
-                        <div className='px-5 pt-4 pb-1.5 text-[10.5px] font-semibold uppercase tracking-widest text-slate-600'>
-                            Recents
+                {/* New Chat Button */}
+                <div className='px-4 pb-4'>
+                    <button 
+                        className='w-full flex items-center justify-center gap-2.5 text-[14px] font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl py-3 border-none cursor-pointer transition-all duration-150 shadow-[0_0_20px_rgba(99,102,241,0.3)]'
+                        onClick={() => dispatch(setSelectedConversation(null))}
+                    >
+                        <Plus size={18} />
+                        New Chat
+                        <div className='ml-auto flex items-center gap-1 text-[11px] bg-white/10 px-2 py-0.5 rounded'>
+                            <Command size={10} />
+                            <span>K</span>
                         </div>
-                    )}
+                    </button>
+                </div>
 
-
-                <div className='flex-1 overflow-y-auto px-2.5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
-                    {conversations?.map((conv, i) => {
-                        const isActive = selectedConversation?._id == conv?._id
+                {/* Agent Selection Menu */}
+                <div className='px-3 pb-3'>
+                    {agentMenuItems.map((agent) => {
+                        const isActive = selectedAgent === agent.id
+                        const Icon = agent.icon
                         return (
-                            <div
-                                onClick={() => dispatch(setSelectedConversation(conv))}
-                                className={`flex items-center gap-2.5 cursor-pointer mb-0.5 px-3 py-2.5 rounded-[10px] border transition-colors duration-150
-                ${isActive ? "bg-indigo-500/10 border-indigo-500/[0.18]"
-                                        : "bg-transparent border-transparent"}`}>
-                                <div className={`flex items-center justify-center shrink-0 w-[28px] h-[28px] rounded-lg transition-colors duration-150
-                ${isActive ? "bg-indigo-500/15 text-indigo-400" : "bg-white/[0.05] text-slate-500"}`}>
-                                    <MessageSquare size={13} />
-                                </div>
-                                <span className={`text-[13px] font-medium truncate ${isActive ? "text-slate-100" : "text-slate-300"}`}>
-                                    {conv?.title || "New Chat"}
-                                </span>
-
-                            </div>
+                            <button
+                                key={agent.id}
+                                onClick={() => dispatch(setSelectedAgent(agent.id))}
+                                className={`w-full flex items-center gap-3 px-3.5 py-3 mb-1 rounded-lg text-[14px] font-medium border-none cursor-pointer transition-all duration-150
+                                    ${isActive 
+                                        ? 'bg-indigo-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]' 
+                                        : 'bg-transparent dark:text-slate-400 light:text-gray-600 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100'
+                                    }`}
+                            >
+                                <Icon size={18} />
+                                {agent.label}
+                            </button>
                         )
                     })}
-
                 </div>
 
-                <div className='mx-2.5 h-px bg-white/[0.06]' />
-                <div className='px-3.5 py-3.5'>
+                {/* Recent Chats Section */}
+                <div className='flex-1 overflow-y-auto px-3 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'>
+                    <div className='flex items-center justify-between px-2 py-3'>
+                        <span className='text-[12px] font-semibold dark:text-slate-600 light:text-gray-500'>
+                            Recent Chats
+                        </span>
+                        <button className='text-[12px] font-semibold text-indigo-500 hover:text-indigo-400 bg-transparent border-none cursor-pointer'>
+                            View all
+                        </button>
+                    </div>
+
+                    {conversations.length === 0 ? (
+                        <div className='px-3 py-4 text-center'>
+                            <p className='text-[13px] dark:text-slate-600 light:text-gray-500'>
+                                No conversations yet
+                            </p>
+                        </div>
+                    ) : (
+                        conversations.map((conv, i) => {
+                            const isActive = selectedConversation?._id == conv?._id
+                            return (
+                                <div
+                                    key={i}
+                                    onClick={() => dispatch(setSelectedConversation(conv))}
+                                    className={`flex items-center gap-3 cursor-pointer mb-1 px-3 py-3 rounded-lg transition-all duration-150
+                                        ${isActive 
+                                            ? "bg-white/[0.05] dark:bg-white/[0.05] light:bg-gray-100" 
+                                            : "hover:bg-white/[0.03] dark:hover:bg-white/[0.03] light:hover:bg-gray-50"
+                                        }`}
+                                >
+                                    <MessageSquare size={16} className={`shrink-0 ${isActive ? 'dark:text-slate-300 light:text-gray-700' : 'dark:text-slate-600 light:text-gray-500'}`} />
+                                    <div className='flex-1 min-w-0'>
+                                        <span className={`text-[13px] font-medium truncate block ${isActive ? 'dark:text-slate-200 light:text-gray-900' : 'dark:text-slate-400 light:text-gray-600'}`}>
+                                            {conv?.title || "New Chat"}
+                                        </span>
+                                        <span className='text-[11px] dark:text-slate-600 light:text-gray-500'>
+                                            {new Date(conv?.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                        </span>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    )}
+                </div>
+
+                {/* User Profile Section */}
+                <div className='border-t dark:border-white/[0.06] light:border-gray-200 px-3.5 py-3.5'>
                     {userData ? (
-                        <div className='flex items-center gap-2.5 cursor-pointer rounded-xl px-3 py-2.5 hover:bg-white/[0.05] transition-colors duration-150'>
-                            <div className='"relative shrink-0'>
-                                {
-                                    (userData?.avatar && !imageError)
-                                        ?
-                                        <img
-                                            className='w-9 h-9 rounded-[10px] object-cover border-2 border-indigo-500/25'
-                                            src={userData?.avatar}
-                                            alt={"image"}
-                                            onError={() => setImageError(true)} />
-                                        :
-                                        <div className='w-9 h-9 rounded-[10px] bg-white/[0.06] flex items-center justify-center'>
-                                            <User size={15} className="text-slate-400" />
-                                        </div>
-
-                                }
-
+                        <div className='flex items-center gap-3 cursor-pointer rounded-xl px-3 py-3 hover:bg-white/[0.03] dark:hover:bg-white/[0.03] light:hover:bg-gray-50 transition-colors duration-150'>
+                            <div className='relative shrink-0'>
+                                {(userData?.avatar && !imageError) ? (
+                                    <img
+                                        className='w-10 h-10 rounded-full object-cover border-2 border-indigo-500/30'
+                                        src={userData?.avatar}
+                                        alt={"avatar"}
+                                        onError={() => setImageError(true)} 
+                                    />
+                                ) : (
+                                    <div className='w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white text-[15px] font-semibold'>
+                                        {userData?.name?.charAt(0).toUpperCase() || 'N'}
+                                    </div>
+                                )}
                             </div>
                             <div className='flex-1 min-w-0'>
-                                <p className='text-[13.5px] font-semibold text-slate-100 truncate'>{userData?.name || "user"}</p>
-                                <p className='text-[11px] text-slate-600 mt-px'>{`${userData?.plan}` || "free plan"} </p>
+                                <p className='text-[14px] font-semibold dark:text-slate-100 light:text-gray-900 truncate'>
+                                    {userData?.name || "User"}
+                                </p>
+                                <p className='text-[12px] dark:text-slate-600 light:text-gray-500 capitalize'>
+                                    {userData?.plan || "Free"} Plan
+                                </p>
                             </div>
                             <div className='flex gap-1'>
                                 <button 
-                                onClick={()=>setShowBilling(true)}
-                                className='flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/[0.08] hover:text-slate-400 transition-all duration-150'>
+                                    onClick={(e) => {e.stopPropagation(); setShowBilling(true)}}
+                                    className='flex items-center justify-center w-8 h-8 rounded-lg border-none bg-transparent text-yellow-600 cursor-pointer hover:bg-white/[0.08] transition-all duration-150'
+                                >
                                     <Coins size={16} />
                                 </button>
-                                <button className='flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-slate-600 cursor-pointer hover:bg-white/[0.08] hover:text-slate-400 transition-all duration-150'
-                                    onClick={() => {
+                                <button 
+                                    className='flex items-center justify-center w-8 h-8 rounded-lg border-none bg-transparent dark:text-slate-600 light:text-gray-500 cursor-pointer hover:bg-white/[0.08] dark:hover:text-slate-400 light:hover:text-gray-700 transition-all duration-150'
+                                    onClick={(e) => {
+                                        e.stopPropagation();
                                         logOut();
                                         dispatch(setUserdata(null))
                                     }}
@@ -233,11 +212,12 @@ function SideBar() {
                                     <LogOut size={16} />
                                 </button>
                             </div>
-                        </div>)
-                        :
-                        <button className='w-full flex items-center justify-center gap-2 text-sm font-medium text-slate-200 bg-white/[0.05] border border-white/[0.08] rounded-xl py-[11px] cursor-pointer hover:bg-white/[0.08] transition-colors duration-150'>
+                        </div>
+                    ) : (
+                        <button className='w-full flex items-center justify-center gap-2 text-sm font-medium dark:text-slate-200 light:text-gray-900 bg-white/[0.05] dark:bg-white/[0.05] light:bg-gray-100 border border-white/[0.08] dark:border-white/[0.08] light:border-gray-200 rounded-xl py-3 cursor-pointer hover:bg-white/[0.08] dark:hover:bg-white/[0.08] light:hover:bg-gray-200 transition-colors duration-150'>
                             Login
-                        </button>}
+                        </button>
+                    )}
                 </div>
             </div>
 
