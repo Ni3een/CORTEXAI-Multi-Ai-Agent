@@ -154,49 +154,6 @@ function ChatInput() {
     console.log(data)
   }
 
-  const agents = [
-    {
-      id: "auto",
-      icon: Zap,
-      label: "Auto"
-    },
-
-    {
-      id: "chat",
-      icon: MessageSquare,
-      label: "Chat"
-    },
-
-    {
-      id: "coding",
-      icon: Code2,
-      label: "Coding"
-    },
-
-    {
-      id: "pdf",
-      icon: FileText,
-      label: "PDF"
-    },
-
-    {
-      id: "ppt",
-      icon: Presentation,
-      label: "PPT"
-    },
-
-    {
-      id: "vision",
-      icon: ImageIcon,
-      label: "Vision"
-    },
-
-    {
-      id: "search",
-      icon: Globe,
-      label: "Search"
-    }
-
   return (
     <div className='w-full overflow-hidden px-3 md:px-5 py-4 border-t border-white/[0.06] dark:border-white/[0.06] light:border-gray-200 dark:bg-[#0d0f14] light:bg-white'>
       <div className='flex flex-col gap-2 bg-white/[0.03] dark:bg-white/[0.03] light:bg-gray-50 border border-white/[0.07] dark:border-white/[0.07] light:border-gray-200 rounded-2xl px-4 pt-3.5 pb-3'>
