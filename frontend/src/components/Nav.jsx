@@ -66,7 +66,7 @@ function Nav() {
         </div>
 
         {/* Agent Selection Pills */}
-        <div className='hidden md:flex items-center gap-1.5 ml-2'>
+        <div className='flex items-center gap-2 ml-1'>
           {agents.map((agent) => {
             const isActive = selectedAgent === agent.label
             const Icon = agent.icon
@@ -75,14 +75,14 @@ function Nav() {
                 key={agent.id}
                 onClick={() => dispatch(setSelectedAgent(agent.label))}
                 className={`
-                  flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border-none cursor-pointer transition-all duration-200
+                  flex items-center gap-2 px-4 py-2 rounded-lg text-[14px] font-medium border-none cursor-pointer transition-all duration-200
                   ${isActive
-                    ? "bg-indigo-600 text-white shadow-[0_0_12px_rgba(99,102,241,0.4)]"
+                    ? "bg-indigo-600 text-white"
                     : "bg-transparent dark:text-slate-400 light:text-gray-600 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100"
                   }
                 `}
               >
-                <Icon size={14} />
+                <Icon size={16} />
                 {agent.label}
               </button>
             )
@@ -90,23 +90,14 @@ function Nav() {
         </div>
       </div>
 
-      {/* Right: Theme Toggle and Time */}
+      {/* Right: Theme Toggle */}
       <div className='flex items-center gap-3'>
-        {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
-          className='flex items-center justify-center w-8 h-8 rounded-lg bg-transparent dark:text-slate-400 light:text-gray-600 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100 border-none cursor-pointer transition-all duration-200'
+          className='flex items-center justify-center w-9 h-9 rounded-lg bg-transparent dark:text-slate-400 light:text-gray-600 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100 border-none cursor-pointer transition-all duration-200'
         >
-          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
-
-        {/* Current Time */}
-        <div className='flex items-center justify-center w-8 h-8 rounded-lg bg-transparent dark:text-slate-400 light:text-gray-600'>
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
       </div>
     </div>
   )
