@@ -1,4 +1,4 @@
-import { FileText, Mic, MicOff, Paperclip, Send, X } from 'lucide-react'
+import { FileText, Paperclip, Send, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import sendMessage from '../features/sendMessage'
 import { useDispatch, useSelector } from 'react-redux'
@@ -15,8 +15,6 @@ function ChatInput() {
   const { selectedConversation } = useSelector(state => state.conversation)
   const { messages, isLoading } = useSelector(state => state.message)
   const [selectedFile, setSelectedFile] = useState(null)
-  const [listening, setListening] = useState(false)
-  const recognitionRef = useRef(null)
   const fileRef = useRef(null)
   const dispatch = useDispatch()
 
@@ -29,78 +27,6 @@ function ChatInput() {
     window.addEventListener('fillChatInput', handleFillInput)
     return () => window.removeEventListener('fillChatInput', handleFillInput)
   }, [])
-
-
-  const transcriptRef = useRef("")
-
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (!SpeechRecognition) return;
-
-    const recognition = new SpeechRecognition()
-    recognition.lang = "en-US"
-    recognition.interimResults = true;
-    recognition.continuous = true;
-
-    recognition.onresult = (event) => {
-      let interim = ""
-      let final = ""
-
-      for (let index = 0; index < event.results.length; index++) {
-        if (event.results[index].isFinal) {
-          final += event.results[index][0].transcript
-        } else {
-          interim += event.results[index][0].transcript
-        }
-      }
-
-      // keep finalized text in ref, show interim alongside it
-      if (final) transcriptRef.current = final
-      setValue(transcriptRef.current + interim)
-    }
-
-    recognition.onend = () => {
-      // browser auto-stops on silence with continuous=true
-      // only mark as stopped if user intentionally clicked stop
-      if (recognitionRef.current?._manualStop) {
-        setListening(false)
-        recognitionRef.current._manualStop = false
-      } else if (recognitionRef.current) {
-        // auto-restart to keep listening
-        try { recognition.start() } catch (_) {}
-      }
-    }
-
-    recognition.onerror = (e) => {
-      if (e.error !== 'no-speech') {
-        setListening(false)
-      }
-    }
-
-    recognitionRef.current = recognition
-  }, [])
-
-  const toggleMic = () => {
-    if (!recognitionRef.current) {
-      alert("Speech recognition is not supported in this browser")
-      return   // ← was missing, caused crash
-    }
-    if (listening) {
-      recognitionRef.current._manualStop = true
-      recognitionRef.current.stop()
-      setListening(false)
-    } else {
-      transcriptRef.current = ""   // reset accumulated text on new session
-      recognitionRef.current.start()
-      setListening(true)
-    }
-  }
-
-
-
-
-
-
 
 
   const handleSendMessage = async () => {
@@ -214,11 +140,6 @@ function ChatInput() {
 
             <button className='flex items-center justify-center w-8 h-8 rounded-lg dark:text-slate-600 light:text-gray-500 hover:text-slate-400 dark:hover:text-slate-400 light:hover:text-gray-700 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100 border border-transparent hover:border-white/[0.06] dark:hover:border-white/[0.06] light:hover:border-gray-200 transition-all duration-150 bg-transparent cursor-pointer' onClick={() => fileRef.current.click()}>
               <Paperclip size={16} />
-            </button>
-            <button
-              onClick={toggleMic}
-              className={`flex items-center justify-center w-8 h-8 rounded-lg  transition-all duration-150 cursor-pointer ${listening ? "bg-red-500 text-white" : "dark:text-slate-600 light:text-gray-500 hover:bg-white/[0.05] dark:hover:bg-white/[0.05] light:hover:bg-gray-100"}`}>
-              {listening ? <Mic size={16} /> : <MicOff size={16} />}
             </button>
             <span className='text-[11px] dark:text-slate-600 light:text-gray-400 ml-1'>↵ Enter to send</span>
           </div>

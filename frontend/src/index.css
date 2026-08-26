@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Make Tailwind dark: variant respond to .dark class on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Theme Variables */
 :root {
   --bg-primary: #0d0f14;
